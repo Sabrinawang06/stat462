@@ -28,7 +28,7 @@ summary(linear_red5)
 #There is a problem with this part. I can only comput 8 RSS but my p is 12.
 install.packages('leaps')
 require(leaps)
-subset1=regsubsets(quality~. -X-type-density+dummy,nbest = 1,method = 'exhaustive',data=wine)
+subset1=regsubsets(quality~. -X-type-density+dummy,nbest = 1,method = 'exhaustive',data=wine,nvmax = 13)
 sum_subset<-summary(subset1)
 sum_subset$which
 #compute R2_adj
@@ -40,11 +40,35 @@ totalSS=sum((wine$quality)-mean(wine$quality)^2)
 n=nrow(wine)
 R2_adj=1-(RSS_p/(n-p))/(totalSS/(n-1))
 R2_adj
-
+min(R2_adj)
+#smallest adjusted R^2 when p=8
+#Cp
 sigma_hat_full=summary(linear_full)$sigma
 C_p=RSS_p/(sigma_hat_full^2)+2*p-n
 C_p
+par(mfrow=c(1,1))
 plot(p,C_p,xlab="Number of betas",ylab="Mallow's Cp")
 abline(0,1)
+#when p=7 
 
+#aic
+aic_p=n*log(RSS_p/n)+2*p
+aic_p
+min(aic_p)
+plot(p,aic_p,xlab="Number of betas",ylab="AIC")
+#when p=7
 
+#bic
+bic_p=n*log(RSS_p/n)+p*log(n)
+bic_p
+min(bic_p)
+plot(p,bic_p,xlab="Number of betas",ylab="BIC")
+#when p=4
+
+#we should use p=7 with volatile.acidity,residual.sugar,chlorides,free.sulfur.dioxide,sulphates,alcohol,dummy
+
+linear_red<-lm(quality~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+sulphates+alcohol+dummy,data = wine)
+summary(linear_red)
+
+#p=7 might not be a good model since R^2 is 0.2627 and we have free.sulfur.dioxide insignificant.
+# we might have collinearity with free.sulfur.dioxide
