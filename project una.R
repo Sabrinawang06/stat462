@@ -12,7 +12,18 @@ linear_full <- lm(quality~. -X-type-density+dummy,data = wine)
 summary(linear_full)
 plot(linear_full)
 #select model
-
+#backward selection
+linear_red1 <- lm(quality~. -X-type-density+dummy-citric.acid,data = wine)
+summary(linear_red1)
+linear_red2 <- lm(quality~. -X-type-density+dummy-citric.acid-pH,data = wine)
+summary(linear_red2)
+linear_red3 <- lm(quality~. -X-type-density+dummy-citric.acid-pH-total.sulfur.dioxide,data = wine)
+summary(linear_red3)
+linear_red4 <- lm(quality~. -X-type-density+dummy-citric.acid-pH-total.sulfur.dioxide-fixed.acidity,data = wine)
+summary(linear_red4)
+linear_red5 <- lm(quality~. -X-type-density+dummy-citric.acid-pH-total.sulfur.dioxide-fixed.acidity-free.sulfur.dioxide,data = wine)
+summary(linear_red5)
+#We end up with 6 predictors.
 
 #There is a problem with this part. I can only comput 8 RSS but my p is 12.
 install.packages('leaps')
