@@ -64,7 +64,7 @@ bic_p
 min(bic_p)
 plot(p,bic_p,xlab="Number of betas",ylab="BIC")
 #when p=4
-
+ 
 #we should use p=7 with volatile.acidity,residual.sugar,chlorides,free.sulfur.dioxide,sulphates,alcohol,dummy
 
 linear_red<-lm(quality~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+sulphates+alcohol+dummy,data = wine)
