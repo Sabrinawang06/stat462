@@ -81,14 +81,14 @@ aic_p=n*log(RSS_p/n)+2*p
 aic_p
 min(aic_p)
 plot(p,aic_p,xlab="Number of betas",ylab="AIC")
-#with 8 predictors.
+#when p=8,with 7 predictors.
 
 #bic
 bic_p=n*log(RSS_p/n)+p*log(n)
 bic_p
 min(bic_p)
 plot(p,bic_p,xlab="Number of betas",ylab="BIC")
-# 5 predictors.
+# when p= 5, 4 predictors.
  
 #we should use p=8 with volatile.acidity,residual.sugar,chlorides,free.sulfur.dioxide,sulphates,alcohol,dummy
 
