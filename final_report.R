@@ -27,3 +27,4 @@ reduced_model4<-update(reduced_model3, .~.-fixed.acidity)
 summary(reduced_model4)
 reduced_model5<-update(reduced_model4, .~.-free.sulfur.dioxide)
 summary(reduced_model5)
+
