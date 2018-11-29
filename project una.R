@@ -58,35 +58,37 @@ sum_subset$which
 p_full=12
 p=2:p_full
 RSS_p=sum_subset$rss
-totalSS=sum((wine$quality)-mean(wine$quality)^2)
+totalSS=sum((wine$quality-mean(wine$quality))^2)
 
 n=nrow(wine)
 R2_adj=1-(RSS_p/(n-p))/(totalSS/(n-1))
 R2_adj
-min(R2_adj)
-#smallest adjusted R^2 when p=8
+plot(p,R2_adj,xlab="Number of betas",ylab="Adjusted R-squared")
+max(R2_adj)
+#max adjusted R^2 with 8 predictors
 #Cp
 sigma_hat_full=summary(linear_full)$sigma
 C_p=RSS_p/(sigma_hat_full^2)+2*p-n
 C_p
+min(C_p)
 par(mfrow=c(1,1))
 plot(p,C_p,xlab="Number of betas",ylab="Mallow's Cp")
 abline(0,1)
-#when p=7 
+#when p=7 , with 6 predictors,
 
 #aic
 aic_p=n*log(RSS_p/n)+2*p
 aic_p
 min(aic_p)
 plot(p,aic_p,xlab="Number of betas",ylab="AIC")
-#when p=8
+#with 8 predictors.
 
 #bic
 bic_p=n*log(RSS_p/n)+p*log(n)
 bic_p
 min(bic_p)
 plot(p,bic_p,xlab="Number of betas",ylab="BIC")
-#when p=5
+# 5 predictors.
  
 #we should use p=8 with volatile.acidity,residual.sugar,chlorides,free.sulfur.dioxide,sulphates,alcohol,dummy
 
