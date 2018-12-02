@@ -1,0 +1,102 @@
+\newline
+---
+title: "STAT Final Report - Wine Dataset"
+author: "Group 4"
+date: "November 27, 2018"
+output: pdf_document
+---
+\newpage
+
+
+####Introduction to the dataset:
+\t The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. We obtained the dataset from: http://archive.ics.uci.edu/ml/datasets/Wine+Quality . The website also provided the following references.\newline
+1. Paulo Cortez, University of Minho, Guimar?es, Portugal, http://www3.dsi.uminho.pt/pcortez \space
+2. A. Cerdeira, F. Almeida, T. Matos and J. Reis, Viticulture Commission of the Vinho Verde Region(CVRVV), Porto, Portugal,2009.
+\t We randomly select 1000 samples of the dataset. It contains the following variables (units are not given in the dataset description): 
+
++ fixed acidity (grams/liter)
+* volatile acidity (grams/liter)
+* citric acid (grams/liter)
+* residual sugar (grams/liter)
+* chlorides (grams/liter)
+* free sulfur dioxide (milligrams/liter)
+* total sulfur dioxide (milligrams/liter)
+* density (grams/cubic centimeter)
+* pH: acidity (below 7) or alkalinity (over 7)
+* sulphates:potassium sulfate (grams/liter)
+* alcohol:percentage alcohol (% volume)
++ Output variable (based on sensory data): quality (score between 0 and 10) 
+
+\t In this report, we are interested in what impact the different qulity of red wine and white wine. We build two different models, treating quality as continuous variable and categorical variable regardingly. Here are some simple summary output of this dataset:
+
+```{r, echo=FALSE}
+wine<-read.csv("wine_sample.csv", header=T)
+summary(wine[,-1])
+```
+
+Consider quality as a response, these are the pariwise correlation of other predictors to quality
+
+```{r xtable, echo=FALSE,results="asis"}
+library(xtable)
+cor<-round(cor(wine[-c(1,13,14)]),2)
+upper<-cor
+upper[upper.tri(cor)]<-""
+upper<-as.data.frame(upper)
+table<-xtable(upper)
+print(table, typle="html",comment=FALSE,scalebox = 0.7)
+```
+
+```{r,echo=FALSE,fig.width=5, fig.height=3}
+par(mfrow=c(1,1))
+hist(wine$quality, main="Distribution for quality")
+```
+
+These are the boxplot for all continuous variables. Density is the only variable does not have outliers and roughly symmetric (due to the random sample; few outliers exist when considering the whole dataset). Extreme outliers can be notieced within the chlorides variables. Most variables are skewed to the right with with the outliers on the larger side.  
+
+```{r,echo=FALSE,fig.width=8,fig.height=4}
+par(mfrow=c(1,6))
+for (i in 2:12) {
+boxplot(wine[i], main=colnames(wine)[i])
+  }
+```
+
+According to the boxplots above, there are some extreme outliers have high chlorides.
+Since the dataset is really big, looking at the pairwise sacatterplots, it is relatively hard to identify outliers, we calculate the leverage of the potential predictors. Still considering the pH value as response, we calculate the leverange of the potential model.There are the points with leverage greater then the threshhold 3*p/n
+
+```{r,echo=FALSE,fig.width=18, fig.height=14,strip.white=TRUE}
+par(mfrow=c(1,4))
+pairs(wine[-c(1,13,14)],cex=0.4)
+```
+
+```{r, echo=FALSE,fig.width=4,fig.height=3}
+X = model.matrix(type~.-type, data=wine)
+H = X%*%solve(t(X)%*%X)%*%t(X)
+h = diag(H)
+#h #leverages
+p=12
+n=length(wine$type)
+# The two threshholds are 2*(p/n) and 3*(p/n)
+thresh2=2*p/n
+thresh3=3*p/n
+plot(h,xlab="Obs #", ylab="Leverage", main="Leverage",cex=0.4,cex.lab=0.8,cex.main=1)
+abline(h=thresh2,lty=2,col="red")
+abline(h=thresh3,lty=2,col="blue")
+wine$color="black"
+wine$color[h>=thresh2]="red"
+```
+
+```{r}
+which(h>thresh3)
+```
+
+
+
+####Check Collinearity and Re-Scaling X's
+
+####Assumption Check and Potential Outlier
+
+####Regression Model treating Quality as continuous Variable and Model Selection
+
+####Logistic Model treating Quality as Categorical Variable and Model Selection
+
+####Summary

@@ -1,0 +1,22 @@
+---
+title: "testing_table"
+author: "Luxin Wang"
+date: "December 1, 2018"
+output: pdf_document
+---
+
+
+
+```{r}
+wine<-read.csv("wine_sample.csv", header=TRUE)
+summary(wine[,-1])
+attach(wine)
+
+mytable <- table(type,quality) # A will be rows, B will be columns 
+
+
+library(xtable)
+result<-xtable(mytable)
+print(result,type="html")
+
+```
