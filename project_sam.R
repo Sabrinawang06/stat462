@@ -17,17 +17,17 @@ quality_logi<-vector('numeric',1000)
 quality_logi[wine$quality<=5]=0
 quality_logi[wine$quality>5]=1
 
-model = lm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+sulphates+alcohol+dummy, data=wine)
+model = lm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+sulphates+alcohol+dummy+pH+total.sulfur.dioxide, data=wine)
 
 summary(model)
 # We can see that the Betas are very different and their scales are not similar, making it tough to compare them
 
 head(wine)
 
-scaled.wine = scale(wine[c("volatile.acidity","residual.sugar","chlorides","free.sulfur.dioxide","sulphates","alcohol")])
+scaled.wine = scale(wine[c("volatile.acidity","residual.sugar","chlorides","free.sulfur.dioxide","sulphates","alcohol","total.sulfur.dioxide", "pH")])
 summary(scaled.wine)
 
-scaled_model = lm(quality_logi ~ scaled.wine)
+scaled_model = lm(quality_logi ~ scaled.wine+dummy)
 summary(scaled_model)
 # Now the Betas are much more similar due to the scaling
 
@@ -83,16 +83,16 @@ which(h>=thresh3)
 library(LogisticDx)
 library(car)
 
-logistic_fit=glm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+sulphates+alcohol+dummy,data=wine,family=binomial(link="logit"))
+logistic_fit=glm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+sulphates+alcohol+dummy+total.sulfur.dioxide+pH,data=wine,family=binomial(link="logit"))
 summary(logistic_fit)
 
 plot(logistic_fit)
 
-scaled.wine = scale(wine[c("volatile.acidity","residual.sugar","chlorides","free.sulfur.dioxide","sulphates","alcohol")])
+scaled.wine = scale(wine[c("volatile.acidity","residual.sugar","chlorides","free.sulfur.dioxide","sulphates","alcohol","total.sulfur.dioxide", "pH")])
 summary(scaled.wine)
 scaled.wine = data.frame(scaled.wine)
 
-scaled_model = glm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+sulphates+alcohol+dummy,data=scaled.wine,family=binomial(link="logit"))
+scaled_model = glm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+sulphates+alcohol+dummy+total.sulfur.dioxide+pH,data=scaled.wine,family=binomial(link="logit"))
 summary(scaled_model)
 
 anova(scaled_model)
@@ -100,3 +100,4 @@ anova(scaled_model)
 library(pscl)
 pR2(scaled_model)
 # McFaddden R^2 is similar to R^2 for linear models, except we want it to be close to zero. In this case, it is 0.19 which is decent.
+
