@@ -7,19 +7,30 @@ output: pdf_document
 
 
 
-```{r xtable}
+```{r xtable,results="asis"}
 wine<-read.csv("wine_sample.csv", header=TRUE)
 summary(wine[,-1])
 attach(wine)
 
-mytable <- table(quality) # A will be rows, B will be columns 
-
-
+# mytable <- table(quality) # A will be rows, B will be columns 
+# 
+# 
 library(xtable)
+# 
+# result<-xtable(mytable)
+# print(result,type="html",comment=FALSE,scalebox = 0.7)
+# 
+# mytable
 
-result<-xtable(mytable)
-print(result,type="html",comment=FALSE,scalebox = 0.7)
+#density has -0.7 with alcohol
+library(car)
+plot(density~alcohol)
+vif(lm(quality~.-X-quality, data=wine)) #remove density
+vif<-vif(lm(quality~.-X-density-quality, data=wine))
 
-mytable
+vif<-as.data.frame(vif)
+vif<-xtable(vif,auto=TRUE)
+print(vif,type="latex",comment=FALSE)
+
 
 ```

@@ -50,9 +50,14 @@ print(table, typle="html",comment=FALSE,scalebox = 0.7)
 library(car)
 plot(density~alcohol)
 vif(lm(quality~.-X-quality, data=wine)) #remove density
-vif(lm(quality~.-X-density-quality, data=wine))
+vif<-vif(lm(quality~.-X-density-quality, data=wine))
 
+vif<-as.data.frame(vif)
 
+vif1<-vif(lm(quality~.-X-quality, data=wine)) #remove density
+vif1<-as.data.frame(vif1)
+vif1<-xtable(vif1,auto=TRUE)
+print(vif1,type="latex",comment=FALSE)
 #####Regular Regression model
 
 
