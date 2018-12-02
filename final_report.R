@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 ##Final Report
 
 #read in the data
@@ -29,7 +29,7 @@ summary(reduced_model4)
 reduced_model5<-update(reduced_model4, .~.-free.sulfur.dioxide)
 summary(reduced_model5)
 
-=======
+
 ##Final Report
 
 #read in the data
@@ -81,13 +81,13 @@ summary(reduced_model4)
 reduced_model5<-update(reduced_model4, .~.-free.sulfur.dioxide)
 summary(reduced_model5)
 
-####adjuested r square
+####Use Bestglm
 require(bestglm)
 Xy<-cbind(wine[,-c(1,9,13)],quality_logi)
 bestglm(Xy,IC="AIC")
 
 
-#####Ordinal lOgsitic
+#####Ordinal logsitic
 require(foreign)
 require(ggplot2)
 require(MASS)
@@ -97,4 +97,14 @@ quality_factor<-as.factor(wine$quality)
 ordinal_fit<-polr(quality_factor~.-X-density-quality,data=wine, Hess=TRUE)
 summary(ordinal_fit)
 
->>>>>>> 5df412e1c4447f937248766ef273a5ee2cd056d1
+
+ctable <- coef(summary(ordinal_fit))
+
+## calculate and store p values
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+
+## combined table
+ctable <- cbind(ctable, "p value" = p)
+ctable
+
+
