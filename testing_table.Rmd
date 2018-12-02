@@ -7,16 +7,19 @@ output: pdf_document
 
 
 
-```{r}
+```{r xtable}
 wine<-read.csv("wine_sample.csv", header=TRUE)
 summary(wine[,-1])
 attach(wine)
 
-mytable <- table(type,quality) # A will be rows, B will be columns 
+mytable <- table(quality) # A will be rows, B will be columns 
 
 
 library(xtable)
+
 result<-xtable(mytable)
-print(result,type="html")
+print(result,type="html",comment=FALSE,scalebox = 0.7)
+
+mytable
 
 ```

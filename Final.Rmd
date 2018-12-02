@@ -1,14 +1,37 @@
-\newline
 ---
-title: "STAT Final Report - Wine Dataset"
-author: "Group 4"
-date: "November 27, 2018"
 output: pdf_document
 ---
-\newpage
+\begin{titlepage}
+   \begin{center}
+       \vspace*{4cm}
+        
+      \Huge
+       \textbf{STAT 462 Final Project}
+       
+      \LARGE
+       \vspace{0.5cm}
+        Regression Analaysis for Wine Data
+ 
+       \vspace{2.5cm}
+       \LARGE
+       \textbf{Samuel Fox, Jiaying Liang, Luxin Wang}
+ 
+       \vfill
+        \vspace{0.8cm}
+ 
+       Statistics Department\\
+       Penn State University\\
+       December 8, 2018
+ 
+   \end{center}
+\end{titlepage}
 
 
-####Introduction to the dataset:
+##Abstract
+
+
+
+##Introduction to the dataset:
 \t The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. We obtained the dataset from: http://archive.ics.uci.edu/ml/datasets/Wine+Quality . The website also provided the following references.\newline
 1. Paulo Cortez, University of Minho, Guimar?es, Portugal, http://www3.dsi.uminho.pt/pcortez \space
 2. A. Cerdeira, F. Almeida, T. Matos and J. Reis, Viticulture Commission of the Vinho Verde Region(CVRVV), Porto, Portugal,2009.

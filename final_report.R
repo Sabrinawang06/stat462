@@ -99,10 +99,8 @@ summary(ordinal_fit)
 
 
 ctable <- coef(summary(ordinal_fit))
-
 ## calculate and store p values
 p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-
 ## combined table
 ctable <- cbind(ctable, "p value" = p)
 ctable
