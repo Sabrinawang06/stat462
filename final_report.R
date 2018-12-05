@@ -69,6 +69,8 @@ quality_logi<-vector('numeric',1000)
 quality_logi[wine$quality<=5]=0
 quality_logi[wine$quality>5]=1
 
+
+
 logistic_fit=glm(quality_logi~.-X-density-quality,data=wine,family=binomial(link="logit"))
 summary(logistic_fit)
 par(mfrow=c(2,2))
@@ -89,7 +91,12 @@ summary(reduced_model5)
 ####Use Bestglm
 require(bestglm)
 Xy<-cbind(wine[,-c(1,9,13)],quality_logi)
-bestglm(Xy,IC="AIC")
+bestglm(Xy,IC="AIC",family=binomial(link="logit"))
+
+logistic_best<-glm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+sulphates+alcohol+type,family=binomial(link="logit"))
+summary(logistic_best)
+par(mfrow=c(2,2))
+plot(logistic_best)
 
 
 #####Ordinal logsitic
@@ -110,4 +117,77 @@ p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
 ctable <- cbind(ctable, "p value" = p)
 ctable
 
+###USE this part ####
+#####Logistic model#####
+
+#create dummy variable
+dummy=vector("numeric",nrow(wine))
+dummy[wine$type=='red']=1
+dummy[wine$type=='white']=0
+
+summary(wine$quality)
+
+# 3-5 are lower quality (0), 6-8 are upper quality (1)
+quality_logi<-vector('numeric',1000)
+quality_logi[wine$quality<=5]=0
+quality_logi[wine$quality>5]=1
+
+######using scaled x's
+
+scaled.wine = scale(wine[c("fixed.acidity","volatile.acidity","citric.acid","residual.sugar","chlorides","free.sulfur.dioxide","total.sulfur.dioxide","pH","sulphates","alcohol")])
+scaled.wine<-cbind(scaled.wine,dummy)
+summary(scaled.wine)
+
+scaled_logistic=glm(quality_logi~scaled.wine,family=binomial(link="logit"))
+summary(scaled_logistic)
+
+##bestglm selection
+require(bestglm)
+Xy2<-as.data.frame(cbind(scaled.wine,quality_logi))
+bestglm(Xy2,IC="AIC",family=binomial(link="logit"))
+
+scaled.wine<-as.data.frame(scaled.wine)
+best_logistic<-glm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+total.sulfur.dioxide+sulphates+alcohol+type+dummy,data=scaled.wine,family=binomial(link="logit"))
+1-best_logistic$deviance/best_logistic$null.deviance # "R-squared"
+
+##Change qulity into ordered factor
+quality_order<-as.ordered(quality)
+
+#####Ordinal logsitic
+require(foreign)
+require(ggplot2)
+require(MASS)
+require(Hmisc)
+require(reshape2)
+require(ordinal)
+
+
+scaled.wine<-as.matrix(scaled.wine)
+ordinal_fit<-polr(quality_order~scaled.wine,Hess=TRUE)
+summary(ordinal_fit)
+
+
+ctable <- coef(summary(ordinal_fit))
+## calculate and store p values
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+## combined table
+ctable <- cbind(ctable, "p value" = p)
+ctable
+
+scaled.wine<-as.data.frame(scaled.wine)
+best_ordinal<-clm(quality_order~volatile.acidity+residual.sugar+sulphates+alcohol)
+summary(best_ordinal)
+
+
+##Anova for quality and type
+require(ggplot2)
+
+anova_analysis<-aov(quality~type)
+summary(anova_analysis)
+ggplot(wine, aes(x = quality, fill = type)) + 
+  geom_histogram(col = "black", alpha = 0.5, 
+                 position = "identity") +
+  scale_fill_discrete(name = "Quality Distribution for Different Type", 
+                      breaks=c("A","B"), 
+                      labels = c("1","2")) # plot
 

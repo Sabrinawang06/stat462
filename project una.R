@@ -49,7 +49,7 @@ linear_red5 <- lm(quality~. -X-type-density+dummy-citric.acid-pH-total.sulfur.di
 summary(linear_red5)
 #We end up with 6 predictors.
 
-install.packages('leaps')
+
 require(leaps)
 subset1=regsubsets(quality~. -X-type-density+dummy,nbest = 1,method = 'exhaustive',data=wine,nvmax = 13)
 sum_subset<-summary(subset1)
