@@ -119,7 +119,7 @@ ctable
 
 ###USE this part ####
 #####Logistic model#####
-
+attach(wine)
 #create dummy variable
 dummy=vector("numeric",nrow(wine))
 dummy[wine$type=='red']=1
@@ -147,7 +147,8 @@ Xy2<-as.data.frame(cbind(scaled.wine,quality_logi))
 bestglm(Xy2,IC="AIC",family=binomial(link="logit"))
 
 scaled.wine<-as.data.frame(scaled.wine)
-best_logistic<-glm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+total.sulfur.dioxide+sulphates+alcohol+type+dummy,data=scaled.wine,family=binomial(link="logit"))
+best_logistic<-glm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+sulphates+alcohol+dummy,data=scaled.wine,family=binomial(link="logit"))
+summary(best_logistic)
 1-best_logistic$deviance/best_logistic$null.deviance # "R-squared"
 
 plot(best_logistic$residuls,main="Observation")
@@ -177,7 +178,7 @@ ctable <- cbind(ctable, "p value" = p)
 ctable
 
 scaled.wine<-as.data.frame(scaled.wine)
-best_ordinal<-clm(quality_order~.-fixed.acidity-citric.acid-pH-total.sulfur.dioxide-free.sulfur.dioxide-chlorides,data=scaled.wine)
+best_ordinal<-clm(quality_order~volatile.acidity+residual.sugar+sulphates+alcohol, data=scaled.wine)
 summary(best_ordinal)
 
 
