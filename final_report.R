@@ -150,6 +150,8 @@ scaled.wine<-as.data.frame(scaled.wine)
 best_logistic<-glm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+total.sulfur.dioxide+sulphates+alcohol+type+dummy,data=scaled.wine,family=binomial(link="logit"))
 1-best_logistic$deviance/best_logistic$null.deviance # "R-squared"
 
+plot(best_logistic$residuls,main="Observation")
+
 ##Change qulity into ordered factor
 quality_order<-as.ordered(quality)
 
@@ -175,7 +177,7 @@ ctable <- cbind(ctable, "p value" = p)
 ctable
 
 scaled.wine<-as.data.frame(scaled.wine)
-best_ordinal<-clm(quality_order~volatile.acidity+residual.sugar+sulphates+alcohol)
+best_ordinal<-clm(quality_order~.-fixed.acidity-citric.acid-pH-total.sulfur.dioxide-free.sulfur.dioxide-chlorides,data=scaled.wine)
 summary(best_ordinal)
 
 
@@ -190,4 +192,56 @@ ggplot(wine, aes(x = quality, fill = type)) +
   scale_fill_discrete(name = "Quality Distribution for Different Type", 
                       breaks=c("A","B"), 
                       labels = c("1","2")) # plot
+
+which(chlorides>0.6)
+
+
+acidity<-seq(5,20,0.5)
+xbeta <- acidity*0.879
+logistic_cdf <- function(x) {
+  return( 1/(1+exp(-x) ) )
+}
+
+p1 <- logistic_cdf( 3.9381 - xbeta )
+p2 <- logistic_cdf( 5.8492 - xbeta ) - logistic_cdf( 3.9381 - xbeta )
+p3 <- logistic_cdf( 9.0082 - xbeta ) - logistic_cdf( 5.8492 - xbeta )
+p4 <- logistic_cdf( 11.5812 - xbeta ) - logistic_cdf(  9.0082- xbeta )
+p6 <- logistic_cdf( 13.7805 - xbeta ) - logistic_cdf( 11.5812 - xbeta )
+p8 <- 1 - logistic_cdf( 13.7805 - xbeta )
+
+plot(acidity,p1, type='l', ylab='Probability',xlab='Alcohol Content', ylim=c(0,1),main="Probability of Quality vs. Alcohol Concent")
+lines(acidity,  p2, col='red')
+lines(acidity,  p3, col='blue')
+lines(acidity,  p4, col='green')
+lines(acidity,  p6, col='purple')
+lines(acidity,  p8, col='brown')
+abline(v=14.05, lty=2, col="black")
+abline(v=8, lty=2, col="black")
+legend("topleft", lty=1, col=c("black", "red", "blue", "green", "purple", "brown"), 
+       legend=c("3", "4", "5", "6", "7", "8"), title = 'Quality Level')
+
+acidity<-seq(5,20,0.5)
+xbeta <- acidity*3.419
+logistic_cdf <- function(x) {
+  return( 1/(1+exp(-x) ) )
+}
+
+p1 <- logistic_cdf( 3.9381 - xbeta )
+p2 <- logistic_cdf( 5.8492 - xbeta ) - logistic_cdf( 3.9381 - xbeta )
+p3 <- logistic_cdf( 9.0082 - xbeta ) - logistic_cdf( 5.8492 - xbeta )
+p4 <- logistic_cdf( 11.5812 - xbeta ) - logistic_cdf(  9.0082- xbeta )
+p6 <- logistic_cdf( 13.7805 - xbeta ) - logistic_cdf( 11.5812 - xbeta )
+p8 <- 1 - logistic_cdf( 13.7805 - xbeta )
+
+plot(acidity,p1, type='l', ylab='Probability',xlab='Volatile Acidity', ylim=c(0,1),main="Probability of Quality vs. Alcohol Concent")
+lines(acidity,  p2, col='red')
+lines(acidity,  p3, col='blue')
+lines(acidity,  p4, col='green')
+lines(acidity,  p6, col='purple')
+lines(acidity,  p8, col='brown')
+abline(v=14.05, lty=2, col="black")
+abline(v=8, lty=2, col="black")
+legend("topleft", lty=1, col=c("black", "red", "blue", "green", "purple", "brown"), 
+       legend=c("3", "4", "5", "6", "7", "8"), title = 'Quality Level')
+
 

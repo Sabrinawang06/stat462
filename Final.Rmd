@@ -38,10 +38,10 @@ output:
 ##Introduction
 
 ##Exploratory Data Analysis
-\indent The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. We obtained the dataset from: http://archive.ics.uci.edu/ml/datasets/Wine+Quality . The website also provided the following references.\newline
+  The two datasets are related to red and white variants of the Portuguese "Vinho Verde" wine. We obtained the dataset from: http://archive.ics.uci.edu/ml/datasets/Wine+Quality . The website also provided the following references.\newline
 1. Paulo Cortez, University of Minho, Guimar?es, Portugal, http://www3.dsi.uminho.pt/pcortez \space
 2. A. Cerdeira, F. Almeida, T. Matos and J. Reis, Viticulture Commission of the Vinho Verde Region(CVRVV), Porto, Portugal,2009.
-\indent We randomly select 1000 samples of the dataset. It contains the following variables (units are not given in the dataset description): 
+  We randomly select 1000 samples of the dataset. It contains the following variables (units are not given in the dataset description): 
 
 + fixed acidity (grams/liter)
 * volatile acidity (grams/liter)
@@ -57,7 +57,7 @@ output:
 * type: type of wine (red/white)
 + Output variable (based on sensory data): quality (score between 0 and 10) 
 
-\indent In this report, we are interested in what impact the different qulity of red wine and white wine. We build two different models, treating quality as continuous variable and categorical variable regardingly. Here are some simple summary output of this dataset:
+  In this report, we are interested in what impact the different qulity of red wine and white wine. We build two different models, treating quality as continuous variable and categorical variable regardingly. Here are some simple summary output of this dataset:
 
 ```{r, echo=FALSE}
 wine<-read.csv("wine_sample.csv", header=T)
@@ -72,13 +72,13 @@ par(mfrow=c(1,1))
 hist(wine$quality, main="Distribution for quality")
 ```
 
-\indent After ploting boxplots for all continuous variables. Density is the only variable does not have outliers and roughly symmetric (due to the random sample; few outliers exist when considering the whole dataset). Extreme outliers can be notieced within the chlorides variables (plot shown below). Most variables are skewed to the right with with the outliers on the larger side.  
+  After ploting boxplots for all continuous variables. Density is the only variable does not have outliers and roughly symmetric (due to the random sample; few outliers exist when considering the whole dataset). Extreme outliers can be notieced within the chlorides variables (plot shown below). Most variables are skewed to the right with with the outliers on the larger side.  
 
-```{r,echo=FALSE,fig.width=8,fig.height=4}
-boxplot(wine$chlorides)
+```{r,echo=FALSE,fig.width=8,fig.height=3,fig.align='center'}
+boxplot(wine$chlorides, horizontal = TRUE)
 ```
 
-\indent Since the dataset is really big, looking at the pairwise sacatterplots will be relatively hard to identify outliers, we calculate the leverage of the potential predictors. Still considering the quality as response, we calculate the leverange of the potential model.
+  Since the dataset is really big, looking at the pairwise sacatterplots will be relatively hard to identify outliers, we calculate the leverage of the potential predictors. Still considering the quality as response, we calculate the leverange of the potential model.
 
 ```{r, echo=FALSE,fig.width=4,fig.height=3}
 X = model.matrix(type~.-type, data=wine)
@@ -95,7 +95,7 @@ thresh3=3*12/1000
 #wine$color[h>=thresh2]="red"
 ```
 
-\indent There are the points with leverage greater then the threshhold 3*p/n:
+  There are the points with leverage greater then the threshhold 3*p/n:
 ```{r, echo=FALSE}
 which(h>thresh3)
 ```
@@ -107,14 +107,14 @@ which(h>thresh3)
 #density has -0.7 with alcohol
 library(car)
 library(xtable)
-plot(density~alcohol)
+#plot(density~alcohol)
 vif1<-vif(lm(quality~.-X-quality, data=wine)) #remove density
 vif1<-as.data.frame(vif1)
 vif1<-xtable(vif1,auto=TRUE)
 #print(vif1,type="latex",comment=FALSE)
 ```
 
-\indent From the VIF table we can see density has VIF of 25.061323 which mean severe collinearity (the plot shows the linear relationship between density and alcoho). So we have to remove this predictor, and this is the new VIF result.
+  From the VIF table we can see density has VIF of 25.061323 which mean severe collinearity. So we have to remove this predictor, and this is the new VIF result.
 
 ```{r echo=FALSE, message=FALSE}
 library(xtable)
@@ -139,25 +139,26 @@ print(xtable(vif2), file="tb.tex", floating=FALSE)
 Looking at the new VIF result, no predictor variabel has VIF largely greater than 4. Thus the collinearity problem is eliminated. We also look in to the scale of X's. Since the orginal full linear model shows there is about 100 times difference between two $\beta$, we decided to scale the X's using the method "scale". In the following analysis, all continuous predictors are scaled.
 
 ####2. Regression Model treating Quality as continuous Variable and Model Selection
-\indent 2.1 Full model \newline
-\indent First we create dummy variable foe type variable, for which type red is 1, and type white is 0. Then we build a full model using quality as response variable. Here shows the full model summary and diagnosit plot
-```{r echo=FALSE,results='asis',message=FALSE}
+#####  2.1 Full model 
+  First we create dummy variable foe type variable, for which type red is 1, and type white is 0. Then we build a full model using quality as response variable. Here shows the full model summary and diagnosit plot
+```{r echo=FALSE,results='asis',message=FALSE,comment=FALSE}
 #create dummy variable
 dummy=vector("numeric",1000)
 dummy[wine$type=='red']=1
 dummy[wine$type=='white']=0
 scaled.wine<-as.data.frame(scaled.wine)
 linear_full <- lm(wine$quality~ scaled.wine$fixed.acidity+scaled.wine$volatile.acidity+scaled.wine$citric.acid+scaled.wine$residual.sugar+scaled.wine$chlorides+scaled.wine$free.sulfur.dioxide+scaled.wine$total.sulfur.dioxide+scaled.wine$pH+scaled.wine$sulphates+scaled.wine$alcohol+dummy)
-xtable(linear_full,type='asis')
+#print(xtable(linear_full),type='latex',comment=FALSE)
 par(mfrow=c(2,2))
 plot(linear_full)
 ```
-\indent The residuals vs fitted looks like this because quality is a cateforical variable with 6 levels. However, since it has so many level, we treat it as a continous variable. Hence, the residuals vs fitted plot breaks into 6 lines. Accorrding to the Q-Q plot, the residuals follows a normal distribution. According to the residuals vs leverage plot, there is no influential point because there is no leverage exceed 0.5. 
 
-\indent 2.2 Select model
+  The residuals vs fitted looks like this because quality is a cateforical variable with 6 levels. However, since it has so many level, we treat it as a continous variable. Hence, the residuals vs fitted plot breaks into 6 lines. Accorrding to the Q-Q plot, the residuals follows a normal distribution. According to the residuals vs leverage plot, there is no influential point because there is no leverage exceed 0.5. 
 
-\indent Using backward selection 
-```{r echo=FALSE, results='asis', message=FALSE}
+#####2.2 Select model
+
+  Using backward selection 
+```{r echo=FALSE, results='asis', message=FALSE,comnent=FALSE}
 linear_red1 <- lm(wine$quality~ scaled.wine$fixed.acidity+scaled.wine$volatile.acidity+scaled.wine$residual.sugar+scaled.wine$chlorides+scaled.wine$free.sulfur.dioxide+scaled.wine$total.sulfur.dioxide+scaled.wine$pH+scaled.wine$sulphates+scaled.wine$alcohol+dummy)
 #summary(linear_red1)
 linear_red2 <- lm(wine$quality~ scaled.wine$fixed.acidity+scaled.wine$volatile.acidity+scaled.wine$residual.sugar+scaled.wine$chlorides+scaled.wine$free.sulfur.dioxide+scaled.wine$total.sulfur.dioxide+scaled.wine$sulphates+scaled.wine$alcohol+dummy)
@@ -167,13 +168,20 @@ linear_red3 <- lm(wine$quality~ scaled.wine$fixed.acidity+scaled.wine$volatile.a
 linear_red4 <- lm(wine$quality~ scaled.wine$volatile.acidity+scaled.wine$residual.sugar+scaled.wine$chlorides+scaled.wine$free.sulfur.dioxide+scaled.wine$sulphates+scaled.wine$alcohol+dummy)
 #summary(linear_red4)
 linear_red5 <- lm(wine$quality~ +scaled.wine$volatile.acidity+scaled.wine$residual.sugar+scaled.wine$chlorides+scaled.wine$sulphates+scaled.wine$alcohol+dummy)
-xtable(linear_red5,type='latex')
+print(xtable(linear_red5),type='latex',comment=FALSE)
 ```
+
+\begin{table}[ht]
+\centering
+\caption{Backward Selected Linear Model}
+\label{tab:tab2}
+\end{table}
+
 We end up with 6 predictors. The reduced model includes volatile.acidity, residual.sugar, chlorides, sulphates , alcohol and dummy variables. 
 
 using $R^2_{adj}$ to select model:
 
-```{r echo=FALSE, message=FALSE}
+```{r echo=FALSE, message=FALSE,comment=FALSE}
 library(leaps)
 subset1=regsubsets(wine$quality~ scaled.wine$fixed.acidity+scaled.wine$volatile.acidity+scaled.wine$citric.acid+scaled.wine$residual.sugar+scaled.wine$chlorides+scaled.wine$free.sulfur.dioxide+scaled.wine$total.sulfur.dioxide+scaled.wine$pH+scaled.wine$sulphates+scaled.wine$alcohol+dummy,nbest = 1,method = 'exhaustive',data=wine,nvmax = 13)
 sum_subset<-summary(subset1)
@@ -202,6 +210,7 @@ bic_p=n*log(RSS_p/n)+p*log(n)
 
 plot(p,bic_p,xlab="Number of betas",ylab="BIC")
 ```
+
 Max adjusted $R^2$ with 8 predictors. The model include fixed.acidity, volatile.acidity, residual.sugar, chlorides, free.sulfur.dioxide, sulphates, alcohol and dummy variables.
 
 Using $C_p$: when p=7 , with 6 predictors. The model include volatile.acidity, residual.sugar, chlorides, sulphates, alcohol and dummy variables.
@@ -210,23 +219,30 @@ Using AIC: when p=8,with 7 predictors. The model includes volatile.acidity, resi
 
 Using BIC: when p= 5, 4 predictors. The model includes volatile.acidity, residual.sugar, sulphates, alcohol and dummy variables.
 
-In conclusion, we should use the model with 6 predictors bacause it has relatively big $R^2_{adj}$, low $C_p$, low aic and low bic. The final models includes volatile.acidity, residual.sugar, chlorides, sulphates, alcohol and dummy variables.
+In conclusion, we should use the model with 7 predictors bacause it has relatively big $R^2_{adj}$, low $C_p$, low aic and low bic. The final models includes volatile.acidity, residual.sugar, chlorides, free.sulfur.dioxides, sulphates, alcohol and dummy variables.
 
-```{r echo=FALSE, results='asis', message=FALSE}
-linear_red<-lm(wine$quality~scaled.wine$volatile.acidity+scaled.wine$residual.sugar+scaled.wine$chlorides+scaled.wine$sulphates+scaled.wine$alcohol+dummy)
-xtable(linear_red, type='latex')
+```{r echo=FALSE, results='asis', message=FALSE,comment=FALSE}
+linear_red<-lm(wine$quality~scaled.wine$volatile.acidity+scaled.wine$residual.sugar+scaled.wine$chlorides+scaled.wine$free.sulfur.dioxide+scaled.wine$sulphates+scaled.wine$alcohol+dummy)
+print(xtable(linear_red), type='latex',comment=FALSE)
 par(mfrow=c(2,2))
 plot(linear_red)
 ```
-According to the summary output, the final model is \
-y = 5.750 -0.250$X_{volatile.acidity}$ + 0.097$X_{residual.sugar}$ -0.0598$X_{chlorides}$+ 0.139$X_{sulphates}$ + 0.383$X_{alcohol}$ + 0.216$d_{type}$\
+\begin{table}[ht]
+\centering
+\caption{Final Reduced Linear Model}
+\label{tab:tab3}
+\end{table}
 
-However, $R^2$ for this model is 0.2608 which means this model only represent 26.08% of the quality response. Hence, we need to use other method to find a better model. 
+According to the summary output, the final model is \
+y = 5.741 -0.246$X_{volatile.acidity}$ + 0.087$X_{residual.sugar}$ -0.059$X_{chlorides}$ +0.047$X_{free.sulfur.dioxide}$ + 0.136$X_{sulphates}$ + 0.388$X_{alcohol}$ + 0.256$d_{type}$\
+
+However, $R^2$ for this model is 0.2627 which means this model only represent 26.27% of the quality response. Hence, we need to use other method to find a better model.  
 
 ####3. Logistic Model treating Quality as Categorical Variable and Model Selection
-\indent 3.1 Prepare Response Variable for Logistic Regression \newline
-\indent To successfully perform the logistic regression analysis, we divide the quality variable into two groups, quality 3-5 is marked as low quality, which is assigned as value 0; quality 6-8 is marked as high quality, which is assigned as value 1. Using the function glm with family parameter of binomial. We get a full model of logistic regression. 
-```{r echo=FALSE, results='asis', message=FALSE}
+#####3.1 Prepare Response Variable for Logistic Regression
+
+  To successfully perform the logistic regression analysis, we divide the quality variable into two groups, quality 3-5 is marked as low quality, which is assigned as value 0; quality 6-8 is marked as high quality, which is assigned as value 1. Using the function glm with family parameter of binomial. We get a full model of logistic regression. 
+```{r echo=FALSE, results='asis', message=FALSE,comment=FALSE}
 #####Logistic model#####
 
 #####Logistic model#####
@@ -250,11 +266,14 @@ scaled.wine<-cbind(scaled.wine,dummy)
 #summary(scaled.wine)
 
 scaled_logistic=glm(quality_logi~scaled.wine,family=binomial(link="logit"))
-xtable(scaled_logistic, type='latex')
+#print(xtable(scaled_logistic), type='latex',comment=FALSE)
 ```
-\indent 3.2 Model Selection 
-\indent Observing the full logsitc regression summary, there are some variable not significantly contribute to the model. Using the function bestglm from the package "bestglm", the best logistic model is selected according to AIC. Then a presudo $R^2$ is calculated using deviance and null deviance from the model summary. The result is 0.1948436. This is a relatively low $R^2$, regardless this is not a "true" $R^2$
-```{r echo=FALSE, results='asis', message=FALSE}
+
+#####3.2 Model Selection 
+
+  Observing the full logsitc regression summary, there are some variable not significantly contribute to the model. Using the function bestglm from the package "bestglm", the best logistic model is selected according to AIC. Then a presudo $R^2$ is calculated using deviance and null deviance from the model summary. The result is 0.1948436. This is a relatively low $R^2$, regardless this is not a "true" $R^2$\newline
+
+```{r echo=FALSE, results='asis', message=FALSE,comment=FALSE}
 ##bestglm selection
 library(bestglm)
 Xy2<-as.data.frame(cbind(scaled.wine,quality_logi))
@@ -262,13 +281,24 @@ Xy2<-as.data.frame(cbind(scaled.wine,quality_logi))
 
 scaled.wine<-as.data.frame(scaled.wine)
 best_logistic<-glm(quality_logi~volatile.acidity+residual.sugar+chlorides+free.sulfur.dioxide+total.sulfur.dioxide+sulphates+alcohol+type+dummy,data=scaled.wine,family=binomial(link="logit"))
-xtable(best_logistic, type='latex')
+print(xtable(best_logistic), type='latex',comment=FALSE)
 #1-best_logistic$deviance/best_logistic$null.deviance # "R-squared"
 ```
+
+\begin{table}[ht]
+\centering
+\caption{Best Logistic Model Output}
+\label{tab:tab4}
+\end{table}
+
+
 ####4. Ordinal Logistic Regression
-\indent 4.1 Even though logistic regression explain the relationship between significant predictors and quality as two level categorical variable, it does not fully explain the true nature of quality as a 6 level categorical variable. Thus, an ordinal logistic regression model is build to fully take consideration of 6 levels of quality. \newline
-\indent Using the function polr from package MASS, treating quality as an ordered factor (with ordered level: 3<4<5<6<7<8), the full ordinal logistic model is constructed. Later, the p-value for each individual t-test is performed. Using backward selection, only variable volatile.acidity, residual.sugar, sulphates, and alcohol are left at $\alpha$=0.05. The best model summary is shown below (a new page called "ordinal" is used, since the clm function has a better ouput than polr function):
-```{r echo=FALSE, message=FALSE}
+
+#####4.1 Build the Ordinal Logistic Regression Model
+
+Even though logistic regression explain the relationship between significant predictors and quality as two level categorical variable, it does not fully explain the true nature of quality as a 6 level categorical variable. Thus, an ordinal logistic regression model is build to fully take consideration of 6 levels of quality. \newline
+  Using the function polr from package MASS, treating quality as an ordered factor (with ordered level: 3<4<5<6<7<8), the full ordinal logistic model is constructed. Later, the p-value for each individual t-test is performed. Using backward selection, only variable volatile.acidity, residual.sugar, sulphates, and alcohol are left at $\alpha$=0.05. The best model summary is shown below (a new page called "ordinal" is used, since the clm function has a better ouput than polr function):
+```{r echo=FALSE, message=FALSE,comment=FALSE}
 ##Change qulity into ordered factor
 quality_order<-as.ordered(quality)
 
@@ -276,7 +306,6 @@ quality_order<-as.ordered(quality)
 require(foreign)
 require(ggplot2)
 require(MASS)
-require(Hmisc)
 require(reshape2)
 require(ordinal)
 
@@ -295,18 +324,25 @@ ctable <- cbind(ctable, "p value" = p)
 
 scaled.wine<-as.data.frame(scaled.wine)
 best_ordinal<-clm(quality_order~volatile.acidity+residual.sugar+sulphates+alcohol)
-summary(best_ordinal)
 ```
-\indent 4.2 ANOVA Analysis for Variable Type
-\indent During the model selection for ordinal logsitic selection, the dummy variable type caught our attention. It is the last variable to be removed from the backward selection with p-value of 0.0579 which is slightly above 0.05. Will this categorical variable of wine type actually impact the wine quality. A seperated anova analysis is performed along with a histogram overlaying the distribution of quality for red wine and white wine. The NOVA table shows that the quality is significantly different from red wine and white wine. 
 
-```{r echo=FALSE,out.width = "70%"}
+\setcounter{table}{4}
+```{r echo=FALSE, comment=FALSE, results='asis',message=FALSE}
+require(stargazer)
+#stargazer(linear_red)
+stargazer(best_ordinal,header=FALSE)
+```
+
+#####4.2 ANOVA Analysis for Variable Type
+
+During the model selection for ordinal logsitic selection, the dummy variable type caught our attention. It is the last variable to be removed from the backward selection with p-value of 0.0579 which is slightly above 0.05. Will this categorical variable of wine type actually impact the wine quality. A seperated anova analysis is performed along with a histogram overlaying the distribution of quality for red wine and white wine. The ANOVA table shows that the quality is significantly different from red wine and white wine. 
+
+```{r echo=FALSE,out.width = "70%",results='asis',comment=FALSE, message=FALSE}
 
 ##Anova for quality and type
 library(ggplot2)
-
 anova_analysis<-aov(quality~type)
-summary(anova_analysis)
+xtable(anova_analysis)
 ggplot(wine, aes(x = quality, fill = type)) + 
   geom_histogram(col = "black", alpha = 0.5, 
                  position = "identity") +
@@ -315,6 +351,11 @@ ggplot(wine, aes(x = quality, fill = type)) +
                       labels = c("red","white")) # plot
 
 ```
+\begin{table}[ht]
+\centering
+\caption{ANOVA table}
+\label{tab:tab6}
+\end{table}
 
 ####5. Check Potential Outlier
 ```{r eacho=FALSE, echo=FALSE}
@@ -333,7 +374,7 @@ p=5
 thresh2=2*p/n
 thresh3=3*p/n
 par(mfrow=c(2,2))
-plot(h,xlab="Obs #", ylab="Leverage", main="Leverage")
+plot(h,xlab="Obs #", ylab="Leverage", main="Leverage",cex=0.3)
 abline(h=thresh2,lty=2,col="red")
 abline(h=thresh3,lty=2,col="blue")
 
@@ -341,18 +382,19 @@ wine$color="black"
 wine$color[h>=thresh2]="red"
 
 r = residuals/(sigma_hat*sqrt(1-h))
-plot(r, xlab="Obs #", ylab="Standardized Residuals", main="Standardize Residuals", col=wine$color)
+plot(r, xlab="Obs #", ylab="Standardized Residuals", main="Standardize Residuals", col=wine$color,cex=0.3)
 
 t = r*sqrt((n-p-1)/(n-p-r^2))
 wine$color[t>1.7]="green"
-plot(t,xlab='Observation #',ylab='Studentized residuals',main='Studentized residuals', col=wine$color)
+plot(t,xlab='Observation #',ylab='Studentized residuals',main='Studentized residuals', col=wine$color,cex=0.3)
 
 cook=(1/p)*r^2*h/(1-h)
-plot(cook,xlab='Observation #',ylab='Cook\'s distance',main='Cook\'s distance', col=wine$color)
+plot(cook,xlab='Observation #',ylab='Cook\'s distance',main='Cook\'s distance', col=wine$color,cex=0.3)
 
 #which(h>=thresh3)
 ```
-\indent Accoding to these plot, there are a lot of observations that have very high leverage (red points in leverage plot are observations with leverage greater than threshold 2p/n) which is most likely due to the fact that a logistic model would better represent them
+  
+  Accoding to these plot, there are a lot of observations that have very high leverage (red points in leverage plot are observations with leverage greater than threshold 2p/n) which is most likely due to the fact that a logistic model would better represent them
 
 ##Result
 
