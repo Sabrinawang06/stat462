@@ -332,6 +332,110 @@ best_ordinal<-clm(quality_order~volatile.acidity+residual.sugar+sulphates+alcoho
 require(stargazer)
 #stargazer(linear_red)
 stargazer(best_ordinal,header=FALSE)
+par(mfrow=c(2,2))
+
+alcohol1<-seq(5,20,0.5)
+xbeta <- alcohol1*0.879
+logistic_cdf <- function(x) {
+  return( 1/(1+exp(-x) ) )
+}
+
+p1 <- logistic_cdf( 3.9381 - xbeta )
+p2 <- logistic_cdf( 5.8492 - xbeta ) - logistic_cdf( 3.9381 - xbeta )
+p3 <- logistic_cdf( 9.0082 - xbeta ) - logistic_cdf( 5.8492 - xbeta )
+p4 <- logistic_cdf( 11.5812 - xbeta ) - logistic_cdf(  9.0082- xbeta )
+p6 <- logistic_cdf( 13.7805 - xbeta ) - logistic_cdf( 11.5812 - xbeta )
+p8 <- 1 - logistic_cdf( 13.7805 - xbeta )
+
+plot(alcohol1,p1, type='l', ylab='Probability',xlab='Alcohol Content', ylim=c(0,1),main="Probability of Quality vs. Alcohol Content")
+lines(alcohol1,  p2, col='red')
+lines(alcohol1,  p3, col='blue')
+lines(alcohol1,  p4, col='green')
+lines(alcohol1,  p6, col='purple')
+lines(alcohol1,  p8, col='brown')
+abline(v=14.05, lty=2, col="black")
+abline(v=8, lty=2, col="black")
+legend("topleft", lty=1, col=c("black", "red", "blue", "green", "purple", "brown"), 
+       legend=c("3", "4", "5", "6", "7", "8"), title = 'Quality Level',cex = 0.5)
+
+
+##Acidity
+
+acidity<-seq(0,2,0.1)
+xbeta <- acidity*-0.5021
+logistic_cdf <- function(x) {
+  return( 1/(1+exp(-x) ) )
+}
+
+p1 <- logistic_cdf( -5.76754 - xbeta )
+p2 <- logistic_cdf( -3.85637 - xbeta ) - logistic_cdf( -5.76754 - xbeta )
+p3 <- logistic_cdf( -0.69738 - xbeta ) - logistic_cdf( -3.85637 - xbeta )
+p4 <- logistic_cdf( 1.87562 - xbeta ) - logistic_cdf(  -0.69738- xbeta )
+p6 <- logistic_cdf( 4.07495 - xbeta ) - logistic_cdf( 1.87562 - xbeta )
+p8 <- 1 - logistic_cdf( 4.07495 - xbeta )
+
+plot(acidity,p1, type='l', ylab='Probability',xlab='Volatile Acidity', ylim=c(0,0.9),main="Probability of Quality vs. Volatile Acidity")
+lines(acidity,  p2, col='red')
+lines(acidity,  p3, col='blue')
+lines(acidity,  p4, col='green')
+lines(acidity,  p6, col='purple')
+lines(acidity,  p8, col='brown')
+abline(v=0.1, lty=2, col="black")
+abline(v=1.33, lty=2, col="black")
+legend("topleft", lty=1, col=c("black", "red", "blue", "green", "purple", "brown"), 
+       legend=c("3", "4", "5", "6", "7", "8"), title = 'Quality Level',cex = 0.5)
+
+
+#Sugar
+sugar<-seq(0,27,1)
+xbeta <- sugar*0.2262
+logistic_cdf <- function(x) {
+  return( 1/(1+exp(-x) ) )
+}
+
+p1 <- logistic_cdf( -5.76754 - xbeta )
+p2 <- logistic_cdf( -3.85637 - xbeta ) - logistic_cdf( -5.76754 - xbeta )
+p3 <- logistic_cdf( -0.69738 - xbeta ) - logistic_cdf( -3.85637 - xbeta )
+p4 <- logistic_cdf( 1.87562 - xbeta ) - logistic_cdf(  -0.69738- xbeta )
+p6 <- logistic_cdf( 4.07495 - xbeta ) - logistic_cdf( 1.87562 - xbeta )
+p8 <- 1 - logistic_cdf( 4.07495 - xbeta )
+
+plot(sugar,p1, type='l', ylab='Probability',xlab='Residual Sugar', ylim=c(0,1),main="Probability of Quality vs. Residual Sugar Content")
+lines(sugar,  p2, col='red')
+lines(sugar,  p3, col='blue')
+lines(sugar,  p4, col='green')
+lines(sugar,  p6, col='purple')
+lines(sugar,  p8, col='brown')
+abline(v=0.7, lty=2, col="black")
+abline(v=26, lty=2, col="black")
+legend("topleft", lty=1, col=c("black", "red", "blue", "green", "purple", "brown"), 
+       legend=c("3", "4", "5", "6", "7", "8"), title = 'Quality Level',cex = 0.5)
+
+##Sulphate
+sulphate1<-seq(0,1.6,0.05)
+xbeta <- sulphate1*2.68418
+logistic_cdf <- function(x) {
+  return( 1/(1+exp(-x) ) )
+}
+
+p1 <- logistic_cdf( -5.76754 - xbeta )
+p2 <- logistic_cdf( -3.85637 - xbeta ) - logistic_cdf( -5.76754 - xbeta )
+p3 <- logistic_cdf( -0.69738 - xbeta ) - logistic_cdf( -3.85637 - xbeta )
+p4 <- logistic_cdf( 1.87562 - xbeta ) - logistic_cdf(  -0.69738- xbeta )
+p6 <- logistic_cdf( 4.07495 - xbeta ) - logistic_cdf( 1.87562 - xbeta )
+p8 <- 1 - logistic_cdf( 4.07495 - xbeta )
+
+plot(sulphate1,p1, type='l', ylab='Probability',xlab='Sulphates', ylim=c(0,1),main="Probability of Quality vs. Sulphates Content")
+lines(sulphate1,  p2, col='red')
+lines(sulphate1,  p3, col='blue')
+lines(sulphate1,  p4, col='green')
+lines(sulphate1,  p6, col='purple')
+lines(sulphate1,  p8, col='brown')
+abline(v=0.25, lty=2, col="black")
+abline(v=1.36, lty=2, col="black")
+legend("topleft", lty=1, col=c("black", "red", "blue", "green", "purple", "brown"), 
+       legend=c("3", "4", "5", "6", "7", "8"), title = 'Quality Level',cex = 0.5)
+
 ```
 
 #####4.2 ANOVA Analysis for Variable Type
