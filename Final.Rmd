@@ -82,13 +82,13 @@ par(mfrow=c(1,1))
 hist(wine$quality, main="Distribution for quality")
 ```
 
-  After ploting boxplots for all continuous variables. Density is the only variable does not have outliers and roughly symmetric (due to the random sample; few outliers exist when considering the whole dataset). Extreme outliers can be notieced within the chlorides variables (plot shown below). Most variables are skewed to the right with with the outliers on the larger side.  
+  After ploting boxplots for all continuous variables, density is the only variable that does not have outliers and is roughly symmetric (due to the random sample; few outliers exist when considering the whole dataset). Extreme outliers can be notieced within the chlorides variable (plot shown below). Most variables are skewed to the right with the outliers on the larger side.  
 
 ```{r,echo=FALSE,fig.width=8,fig.height=3,fig.align='center'}
 boxplot(wine$chlorides, horizontal = TRUE)
 ```
 
-  Since the dataset is really big, looking at the pairwise sacatterplots will be relatively hard to identify outliers, we calculate the leverage of the potential predictors. Still considering the quality as response, we calculate the leverange of the potential model.
+  Since the dataset is really big, looking at the pairwise sacatterplots will be relatively hard to identify outliers, so we calculate the leverage of the potential predictors. Still considering the quality as response, we calculate the leverage of the potential model.
 
 ```{r, echo=FALSE,fig.width=4,fig.height=3}
 X = model.matrix(type~.-type, data=wine)
@@ -105,7 +105,7 @@ thresh3=3*12/1000
 #wine$color[h>=thresh2]="red"
 ```
 
-  There are the points with leverage greater then the threshhold 3*p/n, notice observation #745 is the one point with extreme hight chloride content:
+  These are the points with leverage greater than the threshhold 3*p/n; notice observation #745 is the one point with extreme hight chloride content:
 ```{r, echo=FALSE}
 which(h>thresh3)
 ```
@@ -124,7 +124,7 @@ vif1<-xtable(vif1,auto=TRUE)
 #print(vif1,type="latex",comment=FALSE)
 ```
 
-  From the VIF table we can see density has VIF of 25.061323 which mean severe collinearity. So we have to remove this predictor, and this is the new VIF result.
+  From the VIF table we can see density has VIF of 25.061323 which means severe collinearity. So we have to remove this predictor, and this is the new VIF result.
 
 ```{r echo=FALSE, message=FALSE}
 library(xtable)
@@ -146,7 +146,7 @@ print(xtable(vif2), file="tb.tex", floating=FALSE)
 \label{tab:tab1}
 \end{table}
 
-Looking at the new VIF result, no predictor variabel has VIF largely greater than 4. Thus the collinearity problem is eliminated. We also look in to the scale of X's. Since the orginal full linear model shows there is about 100 times difference between two $\beta$, we decided to scale the X's using the method "scale". In the following analysis, all continuous predictors are scaled.
+Looking at the new VIF result, no predictor variable has VIF largely greater than 4. Thus the collinearity problem is eliminated. We also look into the scale of X's. Since the orginal full linear model shows there is about 100 times difference between two $\beta$, we decided to scale the X's using the method "scale". In the following analysis, all continuous predictors are scaled.
 
 ####2. Regression Model treating Quality as continuous Variable and Model Selection
 #####  2.1 Full model 
@@ -163,7 +163,7 @@ par(mfrow=c(2,2))
 plot(linear_full)
 ```
 
-  The residuals vs fitted looks like this because quality is a cateforical variable with 6 levels. However, since it has so many level, we treat it as a continous variable. Hence, the residuals vs fitted plot breaks into 6 lines. Accorrding to the Q-Q plot, the residuals follows a normal distribution. According to the residuals vs leverage plot, there is no influential point because there is no Cook's distance exceed 0.5. Independent assumption is also met according to residual vs. observation plot which is not shown above (further discussion of check influencial points is in the last section). 
+  The residuals vs fitted looks like this because quality is a cateforical variable with 6 levels. However, since it has so many levels, we treat it as a continous variable. Hence, the residuals vs fitted plot breaks into 6 lines. According to the Q-Q plot, the residuals follow a normal distribution. According to the residuals vs leverage plot, there are no influential points because there is no Cook's distance exceeding 0.5. Independent assumption is also met according to residual vs. observation plot which is not shown above (further discussion of check influencial points is in the last section). 
 
 #####2.2 Select model
 
@@ -286,7 +286,7 @@ scaled_logistic=glm(quality_logi~scaled.wine,family=binomial(link="logit"))
 
 #####3.2 Model Selection 
 
-  Observing the full logsitc regression summary, there are some variable not significantly contribute to the model. Using the function bestglm from the package "bestglm", the best logistic model is selected according to AIC. Then a presudo $R^2$ is calculated using deviance and null deviance from the model summary. The result is 0.1948436. This is a relatively low $R^2$, regardless this is not a "true" $R^2$\newline
+  Observing the full logsitc regression summary, there are some variables that do not significantly contribute to the model. Using the function bestglm from the package "bestglm", the best logistic model is selected according to AIC. Then a presudo $R^2$ is calculated using deviance and null deviance from the model summary. The result is 0.1948436. This is a relatively low $R^2$, regardless this is not a "true" $R^2$\newline
 
 ```{r echo=FALSE, results='asis', message=FALSE,comment=FALSE}
 ##bestglm selection
@@ -306,13 +306,13 @@ print(xtable(best_logistic), type='latex',comment=FALSE)
 \label{tab:tab4}
 \end{table}
 
-However, this logistic regression ignore the fact that quality has 6 different levels. So a better model need to abtained to fully explain the different levels of quality
+However, this logistic regression ignores the fact that quality has 6 different levels. So a better model is needed to fully explain the different levels of quality
 
 ####4. Ordinal Logistic Regression
 
 #####4.1 Build the Ordinal Logistic Regression Model
 
-Even though logistic regression explain the relationship between significant predictors and quality as two level categorical variable, it does not fully explain the true nature of quality as a 6 level categorical variable. Thus, an ordinal logistic regression model is build to fully take consideration of 6 levels of quality. \newline
+Even though logistic regression explains the relationship between significant predictors and quality as a two level categorical variable, it does not fully explain the true nature of quality as a 6 level categorical variable. Thus, an ordinal logistic regression model is built to fully take into consideration the 6 levels of quality. \newline
 
 Using the function polr from package MASS, treating quality as an ordered factor (with ordered level: 3<4<5<6<7<8), the full ordinal logistic model is constructed. Later, the p-value for each individual t-test is performed. Using backward selection, only variable volatile.acidity, residual.sugar, sulphates, and alcohol are left at $\alpha$=0.05. The best model summary is shown below (a new page called "ordinal" is used, since the clm function has a better ouput than polr function) as well as the plot showing change in probability for each level according to the change in different predictors:
 ```{r echo=FALSE, message=FALSE,comment=FALSE}
@@ -440,11 +440,11 @@ legend("right", lty=1, col=c("black", "red", "blue", "green", "purple", "brown")
 
 ```
 
-The graphs above shows the change in probability for each quality level according to change of each significant predictor. And the range between dash lines are the range included by the sample, while range outside the dash lines are prediction. For example, according to the model, when the alcohol content rises up to 15%, the probability of that wine having the quality level of 8 is higher than any other quality. 
+The graphs above show the change in probability for each quality level according to change of each significant predictor. And the range between dashed lines are the range included by the sample, while range outside the dash lines are prediction. For example, according to the model, when the alcohol content rises up to 15%, the probability of that wine having the quality level of 8 is higher than any other quality. 
 
 #####4.2 ANOVA Analysis and Chi-Square test for Variable Type
 
-During the model selection for ordinal logsitic selection, the dummy variable type caught our attention. It is the last variable to be removed from the backward selection with p-value of 0.0579 which is slightly above 0.05. Will this categorical variable of wine type actually impact the wine quality. A seperated anova analysis is performed along with a histogram overlaying the distribution of quality for red wine and white wine. The ANOVA table shows that the mean quality is significantly different from red wine and white wine. 
+During the model selection for ordinal logsitic selection, the dummy variable type caught our attention. It is the last variable to be removed from the backward selection with p-value of 0.0579 which is slightly above 0.05. Will this categorical variable of wine type actually impact the wine quality? A seperate anova analysis is performed along with a histogram overlaying the distribution of quality for red wine and white wine. The ANOVA table shows that the mean quality is significantly different from red wine and white wine. 
 
 ```{r echo=FALSE,out.width = "70%",results='asis',comment=FALSE, message=FALSE}
 
@@ -470,7 +470,7 @@ type & 1 & 7.10 & 7.10 & 9.58 & 0.0020 \\
 
 
  \newpage 
- Otherwise, if we treate quality as categorical variable, given the frequency table of different quality levels for red wine and white wine,then perform Chi-square test for homogenity, the p-value is 0.008298, which is smaller than 0.05. Thus we reject the $H_0$ and conclude that red wine and white wine have different quality distribution.\newline
+ Otherwise, if we treat quality as categorical variable, given the frequency table of different quality levels for red wine and white wine, then perform Chi-square test for homogenity, the p-value is 0.008298, which is smaller than 0.05. Thus we reject the $H_0$ and conclude that red wine and white wine have a different quality distribution.\newline
 
 ```{r echo=FALSE, out.width="70%", results='asis',comment=FALSE,message=FALSE}
 
@@ -486,7 +486,7 @@ print(xtable(frenquency),comment=FALSE)
 \end{table}
 
 
-For the ggplot downbelow, the different distribution of quality between red wine and white wine is shown. White wine has a more left skewed trend, showing white wine has more sample in the higher quality range.\newline
+For the ggplot down below, the different distributions of quality between red wine and white wine is shown. White wine has a more left skewed trend, showing white wine has more samples in the higher quality range.\newline
 
 ```{r echo=FALSE,out.width = "90%",comment=FALSE, message=FALSE,fig.align='center'}
 
@@ -537,7 +537,7 @@ plot(cook,xlab='Observation #',ylab='Cook\'s distance',main='Cook\'s distance', 
 #which(h>=thresh3)
 ```
   
-Accoding to these plot, there are a lot of observations that have very high leverage (red points in leverage plot are observations with leverage greater than threshold 2p/n) which is most likely due to the fact that a logistic model would better represent them. But no points with Cook's distance greater than 0.5, so no influencial point is detected. 
+Accoding to these plots, there are a lot of observations that have very high leverage (red points in leverage plot are observations with leverage greater than threshold 2p/n) which is most likely due to the fact that a logistic model would better represent them. But no points with Cook's distance greater than 0.5, so no influencial point is detected. 
 
 ##Result
 
