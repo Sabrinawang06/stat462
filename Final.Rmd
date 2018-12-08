@@ -75,14 +75,14 @@ wine<-read.csv("wine_sample.csv", header=T)
 attach(wine)
 ```
 
-Consider quality as a response, these is the distribution for quality.
+Consider quality as a response, this is the distribution for quality.
 
 ```{r,echo=FALSE,fig.width=5, fig.height=3}
 par(mfrow=c(1,1))
 hist(wine$quality, main="Distribution for quality")
 ```
 
-  After ploting boxplots for all continuous variables, density is the only variable that does not have outliers and is roughly symmetric (due to the random sample; few outliers exist when considering the whole dataset). Extreme outliers can be notieced within the chlorides variable (plot shown below). Most variables are skewed to the right with the outliers on the larger side.  
+  After ploting boxplots for all continuous variables, density is the only variable that does not have outliers and is roughly symmetric (due to the random sample; few outliers exist when considering the whole dataset). Extreme outliers can be noticed within the chlorides variable (plot shown below). Most variables are skewed to the right with the outliers on the larger side.  
 
 ```{r,echo=FALSE,fig.width=8,fig.height=3,fig.align='center'}
 boxplot(wine$chlorides, horizontal = TRUE)
