@@ -301,3 +301,11 @@ abline(v=1.36, lty=2, col="black")
 legend("topleft", lty=1, col=c("black", "red", "blue", "green", "purple", "brown"), 
        legend=c("3", "4", "5", "6", "7", "8"), title = 'Quality Level',cex = 0.5)
 
+
+table2=matrix(c(5,9,12,3,7,5),ncol=3)
+colnames(table2)=c("Sunny","Over Easy","Scrambled")
+rownames(table2)=c("Females","Males")
+table2
+
+table_cat<-table(type, quality)
+chisq.test(table_cat)
